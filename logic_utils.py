@@ -46,12 +46,14 @@ def check_guess(guess, secret):
 
 def update_score(current_score: int, outcome: str, attempt_number: int):
     if outcome == "Win":
+        # FIXME: Likely off by one - attempt_number + 1 penalizes the first attempt as if it were the second
         points = 100 - 10 * (attempt_number + 1)
         if points < 10:
             points = 10
         return current_score + points
 
     if outcome == "Too High":
+        # FIXME: A wrong "Too High" guess awards +5 on even attempts; every wrong guess should lose points
         if attempt_number % 2 == 0:
             return current_score + 5
         return current_score - 5

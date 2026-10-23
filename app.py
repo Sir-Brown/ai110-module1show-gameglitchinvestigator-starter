@@ -45,6 +45,7 @@ if "history" not in st.session_state:
 
 st.subheader("Make a guess")
 
+# FIXME: Range text is hardcoded to 1-100 but Easy/Hard use different ranges (use low/high)
 st.info(
     f"Guess a number between 1 and 100. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
@@ -71,6 +72,7 @@ with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
 if new_game:
+    # FIXME: New Game ignores the difficulty range (always 1-100) and does not clear st.session_state.history
     st.session_state.secret = random.randint(1, 100)
     st.session_state.attempts = 0
     st.session_state.score = 0
@@ -96,6 +98,7 @@ if submit:
     else:
         st.session_state.history.append(guess_int)
 
+        # FIXME: Logic breaks here - secret is cast to a string on even attempts, so comparisons are inconsistent
         if st.session_state.attempts % 2 == 0:
             secret = str(st.session_state.secret)
         else:
