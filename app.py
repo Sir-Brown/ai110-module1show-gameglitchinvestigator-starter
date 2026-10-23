@@ -45,9 +45,9 @@ if "history" not in st.session_state:
 
 st.subheader("Make a guess")
 
-# FIXME: Range text is hardcoded to 1-100 but Easy/Hard use different ranges (use low/high)
+# FIX: Range text now uses the difficulty's low/high instead of a hardcoded 1-100
 st.info(
-    f"Guess a number between 1 and 100. "
+    f"Guess a number between {low} and {high}. "
     f"Attempts left: {attempt_limit - st.session_state.attempts}"
 )
 
@@ -72,8 +72,9 @@ with col3:
     show_hint = st.checkbox("Show hint", value=True)
 
 if new_game:
-    # FIXME: New Game ignores the difficulty range (always 1-100) and does not clear st.session_state.history
-    st.session_state.secret = random.randint(1, 100)
+    # FIX: New Game now uses the selected difficulty's range and clears the guess history
+    st.session_state.secret = random.randint(low, high)
+    st.session_state.history = []
     st.session_state.attempts = 0
     st.session_state.score = 0
     st.session_state.status = "playing"
@@ -98,13 +99,8 @@ if submit:
     else:
         st.session_state.history.append(guess_int)
 
-        # FIXME: Logic breaks here - secret is cast to a string on even attempts, so comparisons are inconsistent
-        if st.session_state.attempts % 2 == 0:
-            secret = str(st.session_state.secret)
-        else:
-            secret = st.session_state.secret
-
-        outcome, message = check_guess(guess_int, secret)
+        # FIX: Always compare against the integer secret instead of casting it to a string on even attempts
+        outcome, message = check_guess(guess_int, st.session_state.secret)
 
         if show_hint:
             st.warning(message)
