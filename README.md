@@ -12,7 +12,7 @@ It wrote the code, ran away, and now the game is unplayable.
 ## 🛠️ Setup
 
 1. Install dependencies: `pip install -r requirements.txt`
-2. Run the broken app: `python -m streamlit run app.py`
+2. Run the app: `python -m streamlit run app.py`
 
 ## 🕵️‍♂️ Your Mission
 
@@ -29,30 +29,43 @@ It wrote the code, ran away, and now the game is unplayable.
 It is a simple number guessing game. It randomly generates a number and prompts the user to guess it. If they are too low or too high, it will let them know via hints and end once they have made a correct guess. The user is limited to 8 attempts each of which, if unsuccessful, result in a 5 point reduction of their total score.
 
 - [x] Detail which bugs you found.
-Three bugs were found:
+Eight bugs were found:
 1. The attempts allowed was incorrect.
 2. The hints were incorrect.
 3. The new game button did not work correctly.
+4. The secret was converted to a string on even attempts, so comparisons were inconsistent.
+5. A first-attempt win scored 80 instead of 100.
+6. A wrong "Too High" guess added 5 points on even attempts instead of removing them.
+7. New Game ignored the difficulty range and kept the guess history, and the range text was hardcoded to 1-100.
+8. "Attempts left" lagged one guess behind.
 
 - [x] Explain what fixes you applied.
 1. I changed the syntax that resulted in the incorrect attempts allowed issue (started the count from 0 instead of 1).
 2. Simply changed what result warranted what hint.
 3. Changed the syntax of the new game function (clears existing prompts, resets variables, and generates new number).
+4. The integer secret is now always passed to `check_guess` (`app.py`).
+5. The win score is now `100 - 10 * (attempt_number - 1)` (minimum 10), so a first-attempt win scores 100 (`update_score` in `logic_utils.py`).
+6. Every wrong guess, "Too High" or "Too Low", now loses 5 points (`update_score`).
+7. New Game uses the selected difficulty's range and clears the history, and the range text uses the difficulty's low/high (`app.py`).
+8. The attempts/debug status is re-rendered after each guess is processed (`render_status` in `app.py`).
+
+Details of how I and the AI each contributed are in `reflection.md`.
 
 ## 📸 Demo Walkthrough
 
 Describe your fixed game in numbered steps so a reader can follow along without watching a video:
 
-1. User enters a guess of 23
-2. Game returns "Too Low"
-3. Score updates correctly after each guess
+Normal difficulty (range 1-100, 8 attempts), secret number is 32:
+
+1. User starts a new game: score 0, "Attempts left: 8"
+2. User enters a guess of 23
+3. Game returns "Go HIGHER!" (Too Low), score is -5, "Attempts left: 7" updates immediately
 4. User enters a guess of 37
-5. Game returns "Too High"
-6. Score updates correctly after each guess
-7. User enters a guess of 32
-8. Game returns "Congratulations! You win!"
-9. Game ends after the correct guess
-10. User has option to play again by clicking the "New Game" button
+5. Game returns "Go LOWER!" (Too High), score is -10, "Attempts left: 6"
+6. User enters a guess of 32
+7. Game returns "Correct!" and the win adds 80 points (100 - 10 x 2 prior attempts), for a final score of 70
+8. Game ends after the correct guess
+9. User has option to play again by clicking the "New Game" button (a first-attempt win would score 100)
 
 **Screenshot** *(optional)*: <!-- Insert a screenshot of your fixed, winning game here -->
 
