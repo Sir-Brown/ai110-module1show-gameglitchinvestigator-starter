@@ -46,8 +46,8 @@ def check_guess(guess, secret):
 
 def update_score(current_score: int, outcome: str, attempt_number: int):
     if outcome == "Win":
-        # FIX: Removed the off-by-one so a first-attempt win scores 90, not 80
-        points = 100 - 10 * attempt_number
+        # FIX: Removed the off-by-one so a first-attempt win scores 100, not 80
+        points = 100 - 10 * (attempt_number - 1)
         if points < 10:
             points = 10
         return current_score + points
